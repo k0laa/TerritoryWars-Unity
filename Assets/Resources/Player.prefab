@@ -104,6 +104,23 @@ MonoBehaviour:
   Name: {fileID: 3704131656665202784}
   speed: 7.5
   direct: {fileID: 6440885744155744336}
+  playerTile: {fileID: 11400000, guid: 883c0fba1df609441b3b17961bf0f567, type: 2}
+  tiles:
+  - {fileID: 11400000, guid: ec9ae465f38b90744bb043101183f332, type: 2}
+  - {fileID: 11400000, guid: 883c0fba1df609441b3b17961bf0f567, type: 2}
+  - {fileID: 11400000, guid: 33d827bf9fad8054799ac63b32afeabf, type: 2}
+  - {fileID: 11400000, guid: 256c5bfe671f53549976becbaee0ed71, type: 2}
+  - {fileID: 11400000, guid: eab185cac37191d418297483e9b7bcc0, type: 2}
+  - {fileID: 11400000, guid: a42d105c7c546084c8f822dc2bcd6bac, type: 2}
+  - {fileID: 11400000, guid: c25b967a96f534d419ee19100a47a299, type: 2}
+  - {fileID: 11400000, guid: e3b2d5655b2fe6d48b3923dd7b52c9e0, type: 2}
+  - {fileID: 11400000, guid: 2d52f980ff0a8224ba8106658eb2319b, type: 2}
+  - {fileID: 11400000, guid: 9c30de1c91ca407458191184ea0db5e5, type: 2}
+  - {fileID: 11400000, guid: 3d1e74ccf53d6464e946aeeddb2e2f2f, type: 2}
+  - {fileID: 11400000, guid: 11e1c1187047a0b42917ab3e916062b9, type: 2}
+  - {fileID: 11400000, guid: c03f0a802c8fc1c418721ccb8de5eafa, type: 2}
+  - {fileID: 11400000, guid: 8b448cc2f4c5c50448a3af5667fcafb7, type: 2}
+  - {fileID: 11400000, guid: 72ef4ece57cd76141a5447155a04b641, type: 2}
 --- !u!114 &9081262167184005522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -501,7 +518,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
