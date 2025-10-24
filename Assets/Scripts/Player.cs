@@ -13,16 +13,13 @@ public class Player : MonoBehaviourPunCallbacks
     public float speed;
     public GameObject direct;
 
-
-    public TileBase playerTile;
-    public TileBase[] tiles;
-
     TilemapManager tilemapManager;
-
-    private Vector3Int lastCellPos;
     Tilemap tilemap;
-    float horizontal, vertical;
     FixedJoystick joystick;
+
+    float horizontal, vertical;
+    public int tileIndex;
+    private Vector3Int lastCellPos;
 
     void Start()
     {
@@ -30,12 +27,12 @@ public class Player : MonoBehaviourPunCallbacks
         tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
         tilemapManager = GameObject.Find("TilemapManager").GetComponent<TilemapManager>();
 
-        // Mevcut tilemap deðerlerini uygula
-        foreach (var kvp in tilemapManager.TilemapValues)
-        {
-            Vector3Int cellPos = new Vector3Int(kvp.Key[0], kvp.Key[1], 0);
-            tilemap.SetTile(cellPos, tiles[kvp.Value.x]);
-        }
+        //// Mevcut tilemap deðerlerini uygula
+        //foreach (var kvp in tilemapManager.TilemapValues)
+        //{
+        //    Vector3Int cellPos = new Vector3Int(kvp.Key[0], kvp.Key[1], 0);
+        //    tilemap.SetTile(cellPos, tiles[kvp.Value.x]);
+        //}
 
 
         if (photonView.IsMine)
@@ -45,6 +42,8 @@ public class Player : MonoBehaviourPunCallbacks
             joystick = GameObject.Find("Fixed_Joystick").GetComponent<FixedJoystick>();
             gameObject.GetComponentInChildren<Camera>().enabled = true;
             gameObject.GetComponentInChildren<AudioListener>().enabled = true;
+            tileIndex = GameObject.Find("Game Manager").GetComponent<GameManager>().playerTileColorIndex;
+            gameObject.tag = "Player";
 
         }
         else
@@ -118,16 +117,8 @@ public class Player : MonoBehaviourPunCallbacks
         if (cellPos != lastCellPos)
         {
             lastCellPos = cellPos;
-            int index = System.Array.IndexOf(tiles, playerTile);
-            photonView.RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, index);
-            tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, index, PhotonNetwork.LocalPlayer.ActorNumber);
+            tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex);
+            tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber);
         }
-    }
-
-    [PunRPC]
-    void RPC_PaintTile(int x, int y,int color)
-    {
-        Vector3Int cellPos = new Vector3Int(x, y, 0);
-        tilemap.SetTile(cellPos, tiles[color]);
     }
 }

@@ -8,7 +8,10 @@ using UnityEngine.Tilemaps;
 
 public class TilemapManager : MonoBehaviourPunCallbacks
 {
+    public Tilemap tilemap;
+    public TileBase[] tiles;
     public Dictionary<Vector2Int, Vector2Int> TilemapValues = new Dictionary<Vector2Int, Vector2Int>();
+    
 
     [PunRPC]
     public void UpdateTilemapValue(int x, int y, int colorIndex, int pwId)
@@ -24,7 +27,7 @@ public class TilemapManager : MonoBehaviourPunCallbacks
         foreach (var kvp in TilemapValues)
         {
             Vector3Int cellPos = new Vector3Int(kvp.Key.x, kvp.Key.y, 0);
-            FindObjectOfType<Tilemap>().SetTile(cellPos, FindObjectOfType<Player>().tiles[kvp.Value.x]);
+            FindObjectOfType<Tilemap>().SetTile(cellPos, tiles[kvp.Value.x]);
         }
     }
 
@@ -38,7 +41,7 @@ public class TilemapManager : MonoBehaviourPunCallbacks
             if (kvp.Value.y == leftPwId)
             {
                 Vector3Int cellPos = new Vector3Int(kvp.Key.x, kvp.Key.y, 0);
-                FindObjectOfType<Tilemap>().SetTile(cellPos, null);
+                tilemap.SetTile(cellPos, null);
                 keysToRemove.Add(kvp.Key);
             }
         }
@@ -47,5 +50,13 @@ public class TilemapManager : MonoBehaviourPunCallbacks
         {
             TilemapValues.Remove(key);
         }
+    }
+
+
+    [PunRPC]
+    void RPC_PaintTile(int x, int y, int color)
+    {
+        Vector3Int cellPos = new Vector3Int(x, y, 0);
+        tilemap.SetTile(cellPos, tiles[color]);
     }
 }

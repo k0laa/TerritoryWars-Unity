@@ -8,7 +8,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
+    public int playerTileColorIndex = -1;
     public TilemapManager tm;
+    public GameObject selectedImg;
+    public Transform[] buttons;
 
     private void Awake()
     {
@@ -47,5 +50,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         tm.GetComponent<PhotonView>().RPC("ClearTileForLeftPlayer", RpcTarget.AllBuffered, leftID);
 
+    }
+
+
+    public void selectColor(int index)
+    {
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().tileIndex = index;
+        Vector2.MoveTowards(selectedImg.transform.position, buttons[index].position, 1f);
     }
 }
