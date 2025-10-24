@@ -48,8 +48,14 @@ public class ScoreManager : MonoBehaviourPunCallbacks
         var top = counts.OrderByDescending(kv => kv.Value).Take(3).ToList();
 
         // Doldur
-        for (int i = 0; i < 3 && i < top.Count; i++)
+        for (int i = 0; i < 3 ; i++)
         {
+            if (i >= top.Count)
+            {
+                nameTexts[i].text = "";
+                scoreTexts[i].text = "";
+                continue;
+            }
             int pwId = top[i].Key;
             int count = top[i].Value;
             // players sözlüðünden pwId'ye karþýlýk gelen nickname bul
@@ -67,11 +73,6 @@ public class ScoreManager : MonoBehaviourPunCallbacks
     public void RPC_addPlayer(string playerName, int playerTileIndex)
     {
         players.Add(playerTileIndex, playerName);
-
-        foreach (var kvp in players)
-        {
-            Debug.Log("Player ID: " + kvp.Key + ", Name: " + kvp.Value);
-        }
     }
 
     [PunRPC]
