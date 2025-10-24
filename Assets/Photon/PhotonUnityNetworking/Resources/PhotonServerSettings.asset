@@ -43,6 +43,14 @@ MonoBehaviour:
   - UpdateTilemapValue
   - SyncAllTiles
   - ClearTileForLeftPlayer
+  - RPC_writeNameToScoreBoard
+  - RPC_addPlayer
+  - RPC_updateScore
+  - RPC_reduceScore
+  - UpdateScoreboard
+  - RPC_increaseScore
+  - RPC_removePlayer
+  - RPC_UpdateScoreboard
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

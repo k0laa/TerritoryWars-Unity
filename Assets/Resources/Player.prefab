@@ -103,8 +103,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: {fileID: 3704131656665202784}
-  speed: 7.5
   direct: {fileID: 6440885744155744336}
+  speed: 7.5
+  score: 0
   tileIndex: 0
 --- !u!114 &9081262167184005522
 MonoBehaviour:

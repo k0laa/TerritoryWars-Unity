@@ -10,10 +10,12 @@ using UnityEngine.Tilemaps;
 public class Player : MonoBehaviourPunCallbacks
 {
     public TMP_Text Name;
-    public float speed;
     public GameObject direct;
+    public float speed;
+    public int score = 0;
 
     TilemapManager tilemapManager;
+    ScoreManager scoreManager;
     Tilemap tilemap;
     FixedJoystick joystick;
 
@@ -25,7 +27,8 @@ public class Player : MonoBehaviourPunCallbacks
     {
         // Tüm clientlar için tilemap referansý al
         tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
-        tilemapManager = GameObject.Find("TilemapManager").GetComponent<TilemapManager>();
+        tilemapManager = GameObject.Find("Tilemap Manager").GetComponent<TilemapManager>();
+        scoreManager = GameObject.Find("Score Manager").GetComponent<ScoreManager>();
 
         //// Mevcut tilemap deðerlerini uygula
         //foreach (var kvp in tilemapManager.TilemapValues)
@@ -113,12 +116,16 @@ public class Player : MonoBehaviourPunCallbacks
 
     void PaintTile()
     {
+        if (tileIndex == -1)
+            return;
+        
+
         Vector3Int cellPos = tilemap.WorldToCell(transform.position);
-        if (cellPos != lastCellPos)
+        if (tilemap.GetTile(cellPos) != tilemapManager.tiles[tileIndex])
         {
-            lastCellPos = cellPos;
-            tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex);
-            tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber);
+                tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex);
+                tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber);
+                lastCellPos = cellPos;
         }
     }
 }
