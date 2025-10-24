@@ -43,6 +43,9 @@ public class Player : MonoBehaviourPunCallbacks
             Name.text = PhotonNetwork.NickName;
             name = PhotonNetwork.NickName;
             joystick = GameObject.Find("Fixed_Joystick").GetComponent<FixedJoystick>();
+            gameObject.GetComponentInChildren<Camera>().enabled = true;
+            gameObject.GetComponentInChildren<AudioListener>().enabled = true;
+
         }
         else
         {
@@ -78,6 +81,16 @@ public class Player : MonoBehaviourPunCallbacks
 
 
         transform.Translate(new Vector2(horizontal, vertical) * speed * Time.deltaTime);
+
+        if (transform.position.x < -18f)
+            transform.position = new Vector3(-18f, transform.position.y, 0);
+        if (transform.position.x > 18f)
+            transform.position = new Vector3(18f, transform.position.y, 0);
+        if (transform.position.y < -10f)
+            transform.position = new Vector3(transform.position.x, -10f, 0);
+        if (transform.position.y > 10f)
+            transform.position = new Vector3(transform.position.x, 10f, 0);
+
     }
 
     void Direction()
