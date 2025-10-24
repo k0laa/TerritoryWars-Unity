@@ -1,18 +1,51 @@
+using Photon.Pun;
+using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
-public class TilemapManager : MonoBehaviour
+public class TilemapManager : MonoBehaviourPunCallbacks
 {
-    // Start is called before the first frame update
-    void Start()
+    public Dictionary<Vector2Int, Vector2Int> TilemapValues = new Dictionary<Vector2Int, Vector2Int>();
+
+    [PunRPC]
+    public void UpdateTilemapValue(int x, int y, int colorIndex, int pwId)
     {
-        
+        Vector2Int key = new Vector2Int(x, y);
+        TilemapValues[key] = new Vector2Int(colorIndex, pwId);
+
     }
 
-    // Update is called once per frame
-    void Update()
+    [PunRPC]
+    public void SyncAllTiles()
     {
-        
+        foreach (var kvp in TilemapValues)
+        {
+            Vector3Int cellPos = new Vector3Int(kvp.Key.x, kvp.Key.y, 0);
+            FindObjectOfType<Tilemap>().SetTile(cellPos, FindObjectOfType<Player>().tiles[kvp.Value.x]);
+        }
+    }
+
+    [PunRPC]
+    public void ClearTileForLeftPlayer(int leftPwId)
+    {
+        List<Vector2Int> keysToRemove = new List<Vector2Int>();
+
+        foreach (var kvp in TilemapValues)
+        {
+            if (kvp.Value.y == leftPwId)
+            {
+                Vector3Int cellPos = new Vector3Int(kvp.Key.x, kvp.Key.y, 0);
+                FindObjectOfType<Tilemap>().SetTile(cellPos, null);
+                keysToRemove.Add(kvp.Key);
+            }
+        }
+
+        foreach (Vector2Int key in keysToRemove)
+        {
+            TilemapValues.Remove(key);
+        }
     }
 }

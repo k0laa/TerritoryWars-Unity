@@ -104,7 +104,7 @@ MonoBehaviour:
   Name: {fileID: 3704131656665202784}
   speed: 7.5
   direct: {fileID: 6440885744155744336}
-  playerTile: {fileID: 11400000, guid: 883c0fba1df609441b3b17961bf0f567, type: 2}
+  playerTile: {fileID: 11400000, guid: 9c30de1c91ca407458191184ea0db5e5, type: 2}
   tiles:
   - {fileID: 11400000, guid: ec9ae465f38b90744bb043101183f332, type: 2}
   - {fileID: 11400000, guid: 883c0fba1df609441b3b17961bf0f567, type: 2}

@@ -40,6 +40,9 @@ MonoBehaviour:
   - Fire
   - RespawnSpaceship
   - RPC_PaintTile
+  - UpdateTilemapValue
+  - SyncAllTiles
+  - ClearTileForLeftPlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

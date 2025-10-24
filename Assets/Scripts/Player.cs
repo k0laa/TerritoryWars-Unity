@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -15,16 +16,27 @@ public class Player : MonoBehaviourPunCallbacks
 
     public TileBase playerTile;
     public TileBase[] tiles;
-    private Vector3Int lastCellPos;   
 
-    float horizontal, vertical;
+    TilemapManager tilemapManager;
+
+    private Vector3Int lastCellPos;
     Tilemap tilemap;
+    float horizontal, vertical;
     FixedJoystick joystick;
 
     void Start()
     {
         // Tüm clientlar için tilemap referansý al
         tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+        tilemapManager = GameObject.Find("TilemapManager").GetComponent<TilemapManager>();
+
+        // Mevcut tilemap deðerlerini uygula
+        foreach (var kvp in tilemapManager.TilemapValues)
+        {
+            Vector3Int cellPos = new Vector3Int(kvp.Key[0], kvp.Key[1], 0);
+            tilemap.SetTile(cellPos, tiles[kvp.Value.x]);
+        }
+
 
         if (photonView.IsMine)
         {
@@ -95,6 +107,7 @@ public class Player : MonoBehaviourPunCallbacks
             lastCellPos = cellPos;
             int index = System.Array.IndexOf(tiles, playerTile);
             photonView.RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, index);
+            tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, index, PhotonNetwork.LocalPlayer.ActorNumber);
         }
     }
 
