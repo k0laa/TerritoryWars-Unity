@@ -106,6 +106,7 @@ MonoBehaviour:
   direct: {fileID: 6440885744155744336}
   speed: 7.5
   score: 0
+  isReady: 0
   tileIndex: 0
 --- !u!114 &9081262167184005522
 MonoBehaviour:

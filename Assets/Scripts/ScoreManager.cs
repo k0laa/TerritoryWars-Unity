@@ -67,12 +67,11 @@ public class ScoreManager : MonoBehaviourPunCallbacks
         }
     }
 
-
-
     [PunRPC]
     public void RPC_addPlayer(string playerName, int playerTileIndex)
     {
-        players.Add(playerTileIndex, playerName);
+        if (!players.ContainsKey(playerTileIndex))
+            players.Add(playerTileIndex, playerName);
     }
 
     [PunRPC]

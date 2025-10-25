@@ -13,9 +13,11 @@ public class Player : MonoBehaviourPunCallbacks
     public GameObject direct;
     public float speed;
     public int score = 0;
+    public bool isReady = false;
 
     TilemapManager tilemapManager;
     ScoreManager scoreManager;
+    GameManager gameManager;
     Tilemap tilemap;
     FixedJoystick joystick;
 
@@ -29,6 +31,7 @@ public class Player : MonoBehaviourPunCallbacks
         tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
         tilemapManager = GameObject.Find("Tilemap Manager").GetComponent<TilemapManager>();
         scoreManager = GameObject.Find("Score Manager").GetComponent<ScoreManager>();
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
 
         //// Mevcut tilemap deðerlerini uygula
         //foreach (var kvp in tilemapManager.TilemapValues)
@@ -45,14 +48,20 @@ public class Player : MonoBehaviourPunCallbacks
             joystick = GameObject.Find("Fixed_Joystick").GetComponent<FixedJoystick>();
             gameObject.GetComponentInChildren<Camera>().enabled = true;
             gameObject.GetComponentInChildren<AudioListener>().enabled = true;
-            tileIndex = GameObject.Find("Game Manager").GetComponent<GameManager>().playerTileColorIndex;
+            tileIndex = gameManager.playerTileColorIndex;
             gameObject.tag = "Player";
+            scoreManager.photonView.RPC("RPC_addPlayer", RpcTarget.AllBuffered, PhotonNetwork.NickName, PhotonNetwork.LocalPlayer.ActorNumber);
+
+            ExitGames.Client.Photon.Hashtable table = new ExitGames.Client.Photon.Hashtable();
+            table["Ready"] = isReady;
+            PhotonNetwork.LocalPlayer.SetCustomProperties(table);
 
         }
         else
         {
             Name.text = photonView.Owner.NickName;
             gameObject.name = photonView.Owner.NickName;
+            gameObject.tag = "OtherPlayer";
         }
     }
 
@@ -127,5 +136,14 @@ public class Player : MonoBehaviourPunCallbacks
                 tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber);
                 lastCellPos = cellPos;
         }
+    }
+
+    public void SetReady(bool r)
+    {
+        isReady = r;
+
+        ExitGames.Client.Photon.Hashtable table = new ExitGames.Client.Photon.Hashtable();
+        table["Ready"] = isReady;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(table);
     }
 }

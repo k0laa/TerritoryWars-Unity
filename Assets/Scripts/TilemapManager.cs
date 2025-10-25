@@ -59,4 +59,11 @@ public class TilemapManager : MonoBehaviourPunCallbacks
         Vector3Int cellPos = new Vector3Int(x, y, 0);
         tilemap.SetTile(cellPos, tiles[color]);
     }
+
+    [PunRPC]
+    void RPC_ClearAllTilemap()
+    {
+        tilemap.ClearAllTiles();
+        TilemapValues.Clear();
+    }
 }

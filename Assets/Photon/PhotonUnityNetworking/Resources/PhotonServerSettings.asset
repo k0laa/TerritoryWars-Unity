@@ -51,6 +51,15 @@ MonoBehaviour:
   - RPC_increaseScore
   - RPC_removePlayer
   - RPC_UpdateScoreboard
+  - RPC_AddPlayer
+  - RPC_RemovePlayer
+  - StartGame
+  - RPC_ClearAllTilemap
+  - RPC_StartGame
+  - RPC_updateTimeText
+  - RPC_EndGame
+  - SetReady
+  - RPC_setReady
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
