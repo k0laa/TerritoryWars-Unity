@@ -60,6 +60,13 @@ MonoBehaviour:
   - RPC_EndGame
   - SetReady
   - RPC_setReady
+  - StartTime
+  - RPC_Freeze
+  - RPC_itemCollected
+  - RPC_Throw
+  - ThrowItem
+  - itemRigid
+  - RPC_DestroyItem
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

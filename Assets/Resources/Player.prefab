@@ -13,7 +13,9 @@ GameObject:
   - component: {fileID: 625161702923730327}
   - component: {fileID: 9081262167184005522}
   - component: {fileID: -998838438082524865}
-  m_Layer: 0
+  - component: {fileID: 72055592096864131}
+  - component: {fileID: 3023606748816216685}
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 644042916304405137}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.4238179, y: 0.51663375, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -105,9 +107,11 @@ MonoBehaviour:
   Name: {fileID: 3704131656665202784}
   direct: {fileID: 6440885744155744336}
   speed: 7.5
-  score: 0
-  isReady: 0
   tileIndex: 0
+  isReady: 0
+  isFreeze: 0
+  activeItemType: -1
+  Items: []
 --- !u!114 &9081262167184005522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,6 +152,78 @@ MonoBehaviour:
   m_SynchronizeRotation: 0
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!61 &72055592096864131
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 644042916304405137}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
+--- !u!50 &3023606748816216685
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 644042916304405137}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &1659902908814313219
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,7 +235,7 @@ GameObject:
   - component: {fileID: 290505680679090536}
   - component: {fileID: 4615200424658469000}
   - component: {fileID: 3704131656665202784}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Name
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -294,7 +370,7 @@ GameObject:
   - component: {fileID: 8468529412462449067}
   - component: {fileID: 4493448211826758398}
   - component: {fileID: 2691049507488727693}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -394,7 +470,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5999327562575031317}
   - component: {fileID: 8096479915706566434}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: direct
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -444,7 +520,7 @@ GameObject:
   - component: {fileID: 884782201034940017}
   - component: {fileID: 8669901676943383165}
   - component: {fileID: 7832862650281121253}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -535,7 +611,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6777370419452965988}
   - component: {fileID: 6336281579420393666}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: aaa
   m_TagString: Untagged
   m_Icon: {fileID: 0}

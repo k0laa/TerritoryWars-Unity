@@ -1,11 +1,6 @@
 using Photon.Pun;
-using Photon.Realtime;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviourPunCallbacks
@@ -13,11 +8,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     public int playerTileColorIndex = -1;
     public TilemapManager tm;
     public ScoreManager sm;
+    public TimeManager timeManager;
     public GameObject selectedImg;
     public Transform[] buttons;
     public GameObject StartButton;
     public GameObject ReadyButton;
-    public TMP_Text timeText;
 
 
     private GameObject joinPanel;
@@ -96,7 +91,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void selectColor(int index)
     {
         GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().tileIndex = index;
-        ReadyButton.GetComponent<Button>().interactable = true;
+        if (!GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().isReady)
+            ReadyButton.GetComponent<Button>().interactable = true;
         StartCoroutine(MoveToButton(index));
     }
 
@@ -135,7 +131,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (r)
             ReadyButton.GetComponent<Button>().interactable = false;
-        else
+        else 
             ReadyButton.GetComponent<Button>().interactable = true;
 
         GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetReady(r);
@@ -145,22 +141,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         tm.photonView.RPC("RPC_ClearAllTilemap", RpcTarget.AllBuffered);
         photonView.RPC("RPC_StartGame", RpcTarget.All);
-        StartCoroutine(StartTime(60f));
+        timeManager.photonView.RPC("StartTime", RpcTarget.All, 60);
     }
-
-    IEnumerator StartTime(float time)
-    {
-        while (time > 0)
-        {
-            photonView.RPC("RPC_updateTimeText", RpcTarget.All, time);
-            yield return new WaitForSeconds(0.1f);
-            time -= 0.1f;
-        }
-        photonView.RPC("RPC_updateTimeText", RpcTarget.All, 0f);
-        photonView.RPC("RPC_EndGame", RpcTarget.All);
-        photonView.RPC("RPC_setReady", RpcTarget.All, false);
-
-    }
+    
 
 
     #endregion
@@ -168,17 +151,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region RPCs
 
 
-    [PunRPC]
-    void RPC_updateTimeText(float time)
-    {
-        timeText.text = time.ToString("F1");
-    }
-
+    
     [PunRPC]
     void RPC_StartGame()
     {
         joinPanel.SetActive(false);
-        //mine.GetComponent<Player>().StartGame();
     }
 
     [PunRPC]
@@ -187,6 +164,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         //oyuncu 0 notsanýna dön
         GameObject.Find(PhotonNetwork.NickName).transform.position = new Vector3(0, 0, 0);
         joinPanel.SetActive(true);
+        if (PhotonNetwork.IsMasterClient)
+            StartButton.SetActive(true);
+        else
+            StartButton.SetActive(false);
     }
 
     [PunRPC]

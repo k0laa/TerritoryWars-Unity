@@ -1,0 +1,88 @@
+using Photon.Pun;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ItemManager : MonoBehaviour
+{
+    public GameObject FreezeButton;
+
+    public void RandomItemInstantiate()
+    {
+        int randomItem = Random.Range(0, 1);
+        switch (randomItem)
+        {
+            case 0:
+                InstantiateFreeze();
+                break;
+        }
+    }
+
+    public void InstantiateFreeze()
+    {
+        Vector2 position = new Vector2(Random.Range(-17f, 17f), Random.Range(-9f, 9f));
+        PhotonNetwork.Instantiate("Freeze", position, Quaternion.identity, 0, null);
+    }
+
+
+    public void OnFreezeButton()
+    {
+        if (GameObject.FindWithTag("Player").GetComponent<Player>().activeItemType == 0)
+        {
+            DeACtivateItemThrowable(0);
+        }
+        else
+        {
+            ActivateItemThrowable(0);
+        }
+    }
+
+
+    // itemType: 0 - Freeze
+    public void ActivateItemThrowable(int itemType)
+    {
+        if (GameObject.FindWithTag("Player").GetComponent<Player>().activeItemType != -1)
+            return;
+
+        List<GameObject> list = GameObject.FindWithTag("Player").GetComponent<Player>().Items;
+
+        foreach (GameObject item in list)
+        {
+            ItemScript itemScript = item.GetComponent<ItemScript>();
+            if (itemScript.isThrowable == false)
+            {
+                if (itemType == 0 && itemScript.isFreezeItem)
+                {
+                    GameObject.FindWithTag("Player").GetComponent<Player>().activeItemType = 0;
+                    FreezeButton.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
+                    itemScript.isThrowable = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    public void DeACtivateItemThrowable(int itemType)
+    {
+
+        if (GameObject.FindWithTag("Player").GetComponent<Player>().activeItemType != itemType)
+            return;
+
+        List<GameObject> list = GameObject.FindWithTag("Player").GetComponent<Player>().Items;
+        foreach (GameObject item in list)
+        {
+            ItemScript itemScript = item.GetComponent<ItemScript>();
+            if (itemScript.isThrowable == true)
+            {
+                if (itemType == 0 && itemScript.isFreezeItem)
+                {
+                    GameObject.FindWithTag("Player").GetComponent<Player>().activeItemType = -1;
+                    FreezeButton.GetComponent<Image>().color = new Color(90f / 255f, 90f / 255f, 90f / 255f, 1f);
+                    itemScript.isThrowable = false;
+                    break;
+                }
+            }
+        }
+    }
+}

@@ -1,57 +1,64 @@
 using Photon.Pun;
-using Photon.Realtime;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviourPunCallbacks
 {
     public TMP_Text Name;
     public GameObject direct;
     public float speed;
-    public int score = 0;
+    public int tileIndex;
     public bool isReady = false;
+    public bool isFreeze = false;
+    public int activeItemType = -1; // -1: none, 0: freeze
+
+    public List<GameObject> Items;
 
     TilemapManager tilemapManager;
     ScoreManager scoreManager;
     GameManager gameManager;
+    ItemManager itemManager;
     Tilemap tilemap;
-    FixedJoystick joystick;
+    FixedJoystick moveJoystick;
+    FixedJoystick throwJoystick;
 
     float horizontal, vertical;
-    public int tileIndex;
-    private Vector3Int lastCellPos;
+    Button freezeItem;
+    Vector2 lastThrowPos = new Vector2(0, 0);
 
     void Start()
     {
-        // Tüm clientlar için tilemap referansý al
+        // Tüm clientlar için referanslarý al
         tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
         tilemapManager = GameObject.Find("Tilemap Manager").GetComponent<TilemapManager>();
         scoreManager = GameObject.Find("Score Manager").GetComponent<ScoreManager>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-
-        //// Mevcut tilemap deðerlerini uygula
-        //foreach (var kvp in tilemapManager.TilemapValues)
-        //{
-        //    Vector3Int cellPos = new Vector3Int(kvp.Key[0], kvp.Key[1], 0);
-        //    tilemap.SetTile(cellPos, tiles[kvp.Value.x]);
-        //}
-
+        itemManager = GameObject.Find("Item Manager").GetComponent<ItemManager>();
 
         if (photonView.IsMine)
         {
-            Name.text = PhotonNetwork.NickName;
-            name = PhotonNetwork.NickName;
-            joystick = GameObject.Find("Fixed_Joystick").GetComponent<FixedJoystick>();
+            // yerleþik joystick referansýný al
+            moveJoystick = GameObject.Find("FixedMoveJoystick").GetComponent<FixedJoystick>();
+            throwJoystick = GameObject.Find("FixedThrowJoystick").GetComponent<FixedJoystick>();
+            freezeItem = GameObject.Find("FreezeButton").GetComponent<Button>();
+
+            // sadece yerel oyuncu için kamera ve audio listener etkinleþtir
             gameObject.GetComponentInChildren<Camera>().enabled = true;
             gameObject.GetComponentInChildren<AudioListener>().enabled = true;
+
+            // oyuncu deðerlerini ayarla
+            Name.text = PhotonNetwork.NickName;
+            name = PhotonNetwork.NickName;
             tileIndex = gameManager.playerTileColorIndex;
             gameObject.tag = "Player";
+
+            // oyuncuyu skor yöneticisine ekle
             scoreManager.photonView.RPC("RPC_addPlayer", RpcTarget.AllBuffered, PhotonNetwork.NickName, PhotonNetwork.LocalPlayer.ActorNumber);
 
+            // hazýr durumunu custom property olarak ayarla
             ExitGames.Client.Photon.Hashtable table = new ExitGames.Client.Photon.Hashtable();
             table["Ready"] = isReady;
             PhotonNetwork.LocalPlayer.SetCustomProperties(table);
@@ -59,6 +66,7 @@ public class Player : MonoBehaviourPunCallbacks
         }
         else
         {
+            // diðer oyuncular için isim ve tag ayarla
             Name.text = photonView.Owner.NickName;
             gameObject.name = photonView.Owner.NickName;
             gameObject.tag = "OtherPlayer";
@@ -67,21 +75,25 @@ public class Player : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (photonView.IsMine)
+        if (photonView.IsMine && !isFreeze)
         {
             Movement();
             Direction();
             PaintTile();
+            ThrowControl();
         }
     }
+
+    #region Karakter Kontrolleri
+
 
     void Movement()
     {
 
-        if (joystick.Horizontal != 0 || joystick.Vertical != 0)
+        if (moveJoystick.Horizontal != 0 || moveJoystick.Vertical != 0)
         {
-            horizontal = joystick.Horizontal;
-            vertical = joystick.Vertical;
+            horizontal = moveJoystick.Horizontal;
+            vertical = moveJoystick.Vertical;
         }
         else
         {
@@ -123,18 +135,106 @@ public class Player : MonoBehaviourPunCallbacks
         direct.transform.localScale = scale;
     }
 
+    void ThrowItem(int itemType)
+    {
+        if (Items.Count > 0)
+        {
+            // Atýlacak eþyayý bul
+            GameObject itemToThrow = null;
+            foreach (GameObject item in Items)
+            {
+                ItemScript itemScript = item.GetComponent<ItemScript>();
+                if (itemType == 0 && itemScript.isFreezeItem)
+                {
+                    itemToThrow = item;
+                    break;
+                }
+            }
+            itemManager.DeACtivateItemThrowable(itemType);
+            Items.Remove(itemToThrow);
+
+            // Eþya bittiðinde butonu devre dýþý býrak
+            freezeItem.interactable = false;
+            if (Items.Count != 0)
+                foreach (GameObject item in Items)
+                {
+                    ItemScript itemScript = item.GetComponent<ItemScript>();
+                    if (itemToThrow.GetComponent<ItemScript>().isFreezeItem)
+                    {
+                        if (itemScript.isFreezeItem)
+                        {
+                            freezeItem.interactable = true;
+                            break;
+                        }
+                    }
+                }
+
+
+            itemToThrow.GetComponent<ItemScript>().itemThrowwed();
+            itemToThrow.GetComponent<Transform>().position = transform.position;
+
+            Vector2 direction = new Vector2(lastThrowPos.x, lastThrowPos.y);
+
+            int viewID = itemToThrow.GetComponent<PhotonView>().ViewID;
+            direction.Normalize(); // birim vektör
+            photonView.RPC("itemRigid", RpcTarget.AllBuffered, direction, viewID);
+
+        }
+    }
+
+    [PunRPC]
+    public void itemRigid(Vector2 direction, int viewID)
+    {
+        GameObject itemToThrow = PhotonView.Find(viewID).gameObject;
+        itemToThrow.GetComponent<Rigidbody2D>().velocity = direction * 6.5f;
+    }
+
+    void ThrowControl()
+    {
+        if (activeItemType == -1)
+            return;
+
+        if (Input.touchCount > 0)
+        {
+
+            foreach (Touch touch in Input.touches)
+            {
+                if (touch.position.x > 2000 && touch.position.y < 800)
+                {
+                    if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
+                    {
+                        lastThrowPos = new Vector2(throwJoystick.Horizontal, throwJoystick.Vertical);
+                        return;
+                    }
+                }
+                else
+                    continue;
+
+                if (touch.phase == TouchPhase.Ended)
+                {
+                    if (lastThrowPos.x > 0.2f || lastThrowPos.x < -0.2f ||
+                        lastThrowPos.y > 0.2f || lastThrowPos.y < -0.2f)
+                        ThrowItem(activeItemType);
+                    lastThrowPos = new Vector2(throwJoystick.Horizontal, throwJoystick.Vertical);
+                }
+            }
+        }
+    }
+
+
+    #endregion
+
     void PaintTile()
     {
         if (tileIndex == -1)
             return;
-        
+
 
         Vector3Int cellPos = tilemap.WorldToCell(transform.position);
         if (tilemap.GetTile(cellPos) != tilemapManager.tiles[tileIndex])
         {
-                tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex);
-                tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber);
-                lastCellPos = cellPos;
+            tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex);
+            tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber);
         }
     }
 
@@ -145,5 +245,42 @@ public class Player : MonoBehaviourPunCallbacks
         ExitGames.Client.Photon.Hashtable table = new ExitGames.Client.Photon.Hashtable();
         table["Ready"] = isReady;
         PhotonNetwork.LocalPlayer.SetCustomProperties(table);
+    }
+
+    void Unfreeze()
+    {
+        isFreeze = false;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (photonView.IsMine)
+            if (collision.gameObject.CompareTag("Item") && !collision.GetComponent<ItemScript>().isCollected)
+            {
+                Items.Add(collision.gameObject);
+                freezeItem.interactable = true;
+                collision.GetComponent<ItemScript>().photonView.RPC("RPC_itemCollected", RpcTarget.AllBuffered, gameObject.name);
+            }
+            else if (collision.gameObject.CompareTag("Item") && collision.GetComponent<ItemScript>().isCollected)
+            {
+                if (collision.GetComponent<ItemScript>().ownerName != gameObject.name)
+                {
+                    isFreeze = true;
+                    Invoke("Unfreeze", 4f);
+
+                    int viewID = collision.gameObject.GetComponent<PhotonView>().ViewID;
+                    photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
+                }
+            }
+    }
+
+    [PunRPC]
+    void RPC_DestroyItem(int viewID)
+    {
+        PhotonView pv = PhotonView.Find(viewID);
+        if (pv != null)
+        {
+            PhotonNetwork.Destroy(pv.gameObject);
+        }
     }
 }
