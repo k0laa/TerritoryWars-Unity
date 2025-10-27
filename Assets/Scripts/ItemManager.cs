@@ -8,14 +8,21 @@ public class ItemManager : MonoBehaviour
 {
     public GameObject FreezeButton;
 
+    #region Instantiate Methods
+
+
     public void RandomItemInstantiate()
     {
-        int randomItem = Random.Range(0, 1);
+        int randomItem = Random.Range(0, 2);
         switch (randomItem)
         {
             case 0:
                 InstantiateFreeze();
                 break;
+            case 1:
+                InstantiateSpeedBoost();
+                break;
+
         }
     }
 
@@ -24,6 +31,17 @@ public class ItemManager : MonoBehaviour
         Vector2 position = new Vector2(Random.Range(-17f, 17f), Random.Range(-9f, 9f));
         PhotonNetwork.Instantiate("Freeze", position, Quaternion.identity, 0, null);
     }
+
+    public void InstantiateSpeedBoost()
+    {
+        Vector2 position = new Vector2(Random.Range(-17f, 17f), Random.Range(-9f, 9f));
+        PhotonNetwork.Instantiate("SpeedBoost", position, Quaternion.identity, 0, null);
+    }
+
+
+    #endregion
+
+    #region Item Activation Methods
 
 
     public void OnFreezeButton()
@@ -37,7 +55,6 @@ public class ItemManager : MonoBehaviour
             ActivateItemThrowable(0);
         }
     }
-
 
     // itemType: 0 - Freeze
     public void ActivateItemThrowable(int itemType)
@@ -83,6 +100,21 @@ public class ItemManager : MonoBehaviour
                     break;
                 }
             }
+        }
+    }
+
+
+    #endregion
+
+    public void DestroyAllItems()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+        GameObject[] allItems = GameObject.FindGameObjectsWithTag("Item");
+        foreach (GameObject item in allItems)
+        {
+            int viewID = item.GetComponent<PhotonView>().ViewID;
+            item.GetComponent<ItemScript>().photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
         }
     }
 }

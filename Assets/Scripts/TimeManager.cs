@@ -10,7 +10,7 @@ public class TimeManager : MonoBehaviourPunCallbacks
     public GameManager gm;
     public ItemManager im;
 
-    public float time = 60f;
+    float time = 60f;
     float lastItemSpawnTime = 60f;
 
     [PunRPC]
@@ -28,7 +28,7 @@ public class TimeManager : MonoBehaviourPunCallbacks
             if (PhotonNetwork.IsMasterClient)
             {
                 photonView.RPC("RPC_updateTimeText", RpcTarget.All, time);
-                if (lastItemSpawnTime - time > 5)
+                if (lastItemSpawnTime - time > 10)
                 {
                     im.RandomItemInstantiate();
                     lastItemSpawnTime = time;
@@ -42,6 +42,7 @@ public class TimeManager : MonoBehaviourPunCallbacks
             photonView.RPC("RPC_updateTimeText", RpcTarget.All, 0f);
             gm.photonView.RPC("RPC_EndGame", RpcTarget.All);
             gm.photonView.RPC("RPC_setReady", RpcTarget.All, false);
+            im.DestroyAllItems();// methodun içinde RPC çaðrýsý var. Np. 
         }
     }
 

@@ -135,6 +135,51 @@ public class Player : MonoBehaviourPunCallbacks
         direct.transform.localScale = scale;
     }
 
+    void PaintTile()
+    {
+        if (tileIndex == -1)
+            return;
+
+        Vector3Int cellPos = tilemap.WorldToCell(transform.position);
+        if (tilemap.GetTile(cellPos) != tilemapManager.tiles[tileIndex])
+        {
+            tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex);
+            tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber);
+        }
+    }
+
+    void ThrowControl()
+    {
+        if (activeItemType == -1)
+            return;
+
+        if (Input.touchCount > 0)
+        {
+
+            foreach (Touch touch in Input.touches)
+            {
+                if (touch.position.x > 2000 && touch.position.y < 800)
+                {
+                    if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
+                    {
+                        lastThrowPos = new Vector2(throwJoystick.Horizontal, throwJoystick.Vertical);
+                        return;
+                    }
+                }
+                else
+                    continue;
+
+                if (touch.phase == TouchPhase.Ended)
+                {
+                    if (lastThrowPos.x > 0.2f || lastThrowPos.x < -0.2f ||
+                        lastThrowPos.y > 0.2f || lastThrowPos.y < -0.2f)
+                        ThrowItem(activeItemType);
+                    lastThrowPos = new Vector2(throwJoystick.Horizontal, throwJoystick.Vertical);
+                }
+            }
+        }
+    }
+
     void ThrowItem(int itemType)
     {
         if (Items.Count > 0)
@@ -189,54 +234,12 @@ public class Player : MonoBehaviourPunCallbacks
         itemToThrow.GetComponent<Rigidbody2D>().velocity = direction * 6.5f;
     }
 
-    void ThrowControl()
-    {
-        if (activeItemType == -1)
-            return;
-
-        if (Input.touchCount > 0)
-        {
-
-            foreach (Touch touch in Input.touches)
-            {
-                if (touch.position.x > 2000 && touch.position.y < 800)
-                {
-                    if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
-                    {
-                        lastThrowPos = new Vector2(throwJoystick.Horizontal, throwJoystick.Vertical);
-                        return;
-                    }
-                }
-                else
-                    continue;
-
-                if (touch.phase == TouchPhase.Ended)
-                {
-                    if (lastThrowPos.x > 0.2f || lastThrowPos.x < -0.2f ||
-                        lastThrowPos.y > 0.2f || lastThrowPos.y < -0.2f)
-                        ThrowItem(activeItemType);
-                    lastThrowPos = new Vector2(throwJoystick.Horizontal, throwJoystick.Vertical);
-                }
-            }
-        }
-    }
 
 
     #endregion
 
-    void PaintTile()
-    {
-        if (tileIndex == -1)
-            return;
+    #region Property Ayarlarý
 
-
-        Vector3Int cellPos = tilemap.WorldToCell(transform.position);
-        if (tilemap.GetTile(cellPos) != tilemapManager.tiles[tileIndex])
-        {
-            tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex);
-            tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber);
-        }
-    }
 
     public void SetReady(bool r)
     {
@@ -247,10 +250,24 @@ public class Player : MonoBehaviourPunCallbacks
         PhotonNetwork.LocalPlayer.SetCustomProperties(table);
     }
 
+
+    #endregion
+
+    #region Item Devre Dýþý Býrakma
+
+
     void Unfreeze()
     {
         isFreeze = false;
     }
+
+    void RemoveSpeedBoost()
+    {
+        speed -= 4.5f;
+    }
+
+
+    #endregion
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -258,29 +275,35 @@ public class Player : MonoBehaviourPunCallbacks
             if (collision.gameObject.CompareTag("Item") && !collision.GetComponent<ItemScript>().isCollected)
             {
                 Items.Add(collision.gameObject);
-                freezeItem.interactable = true;
                 collision.GetComponent<ItemScript>().photonView.RPC("RPC_itemCollected", RpcTarget.AllBuffered, gameObject.name);
+
+                if (collision.GetComponent<ItemScript>().isFreezeItem)
+                {
+                    freezeItem.interactable = true;
+                }
+                else if (collision.GetComponent<ItemScript>().isSpeedBoostItem)
+                {
+                    Items.Remove(collision.gameObject);
+                    speed += 4.5f;
+                    Invoke("RemoveSpeedBoost", 5f); 
+
+                    int viewID = collision.gameObject.GetComponent<PhotonView>().ViewID;
+                    collision.GetComponent<ItemScript>().photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
+                }
+
             }
             else if (collision.gameObject.CompareTag("Item") && collision.GetComponent<ItemScript>().isCollected)
             {
                 if (collision.GetComponent<ItemScript>().ownerName != gameObject.name)
                 {
-                    isFreeze = true;
-                    Invoke("Unfreeze", 4f);
-
+                    if (collision.GetComponent<ItemScript>().isFreezeItem)
+                    {
+                        isFreeze = true;
+                        Invoke("Unfreeze", 3f);
+                    }
                     int viewID = collision.gameObject.GetComponent<PhotonView>().ViewID;
-                    photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
+                    collision.GetComponent<ItemScript>().photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
                 }
             }
-    }
-
-    [PunRPC]
-    void RPC_DestroyItem(int viewID)
-    {
-        PhotonView pv = PhotonView.Find(viewID);
-        if (pv != null)
-        {
-            PhotonNetwork.Destroy(pv.gameObject);
-        }
     }
 }

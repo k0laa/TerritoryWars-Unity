@@ -9,6 +9,7 @@ public class ItemScript : MonoBehaviourPunCallbacks
     public bool isCollected = false;
     public bool isThrowable = false;
     public bool isFreezeItem;
+    public bool isSpeedBoostItem;
     public bool isThrowwed = false;
 
     public Transform owner;
@@ -19,7 +20,6 @@ public class ItemScript : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer.NickName == ownerName)
             if (isCollected && !isThrowwed)
                 gameObject.GetComponent<Transform>().position = owner.position + new Vector3(0.5f, -0.5f);
-
     }
 
     public void itemThrowwed()
@@ -37,7 +37,6 @@ public class ItemScript : MonoBehaviourPunCallbacks
         DestroyItem();
     }
 
-
     public void DestroyItem()
     {
         if (this != null && gameObject != null)
@@ -46,6 +45,15 @@ public class ItemScript : MonoBehaviourPunCallbacks
         }
     }
 
+    [PunRPC]
+    void RPC_DestroyItem(int viewID)
+    {
+        PhotonView pv = PhotonView.Find(viewID);
+        if (pv != null)
+        {
+            PhotonNetwork.Destroy(pv.gameObject);
+        }
+    }
 
     [PunRPC]
     public void RPC_itemCollected(string itemOwner)

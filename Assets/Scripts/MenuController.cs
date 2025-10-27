@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviourPunCallbacks
 {
-
     public GameObject joinPanel;
     public TMP_InputField input;
+
     void Start()
     {
         PhotonNetwork.ConnectUsingSettings();
@@ -49,5 +49,19 @@ public class MenuController : MonoBehaviourPunCallbacks
     public void JoinRoom()
     {
         PhotonNetwork.JoinOrCreateRoom("kolaa", new RoomOptions { MaxPlayers = 20, IsOpen = true, IsVisible = true }, TypedLobby.Default);
+    }
+
+    public void NameInputChanged()
+    {
+        string name = GameObject.Find("UsernameInputField").GetComponent<TMP_InputField>().text.Trim();
+
+        if(name.Length >= 3)
+        {
+            GameObject.Find("JoinButton").GetComponent<UnityEngine.UI.Button>().interactable = true;
+        }
+        else
+        {
+            GameObject.Find("JoinButton").GetComponent<UnityEngine.UI.Button>().interactable = false;
+        }
     }
 }

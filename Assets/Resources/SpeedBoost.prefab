@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 297393084190146263}
   - component: {fileID: 4616579801945992441}
   m_Layer: 0
-  m_Name: Freeze
+  m_Name: SpeedBoost
   m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c811464efa5db8045ac9ce427b5d21cc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 81e81b32126ceee409243de1127df843, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -104,8 +104,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isCollected: 0
   isThrowable: 0
-  isFreezeItem: 1
-  isSpeedBoostItem: 0
+  isFreezeItem: 0
+  isSpeedBoostItem: 1
   isThrowwed: 0
   owner: {fileID: 0}
   ownerName: 

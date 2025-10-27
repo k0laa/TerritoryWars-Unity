@@ -1,5 +1,6 @@
 using Photon.Pun;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,17 +13,23 @@ public class GameManager : MonoBehaviourPunCallbacks
     public GameObject selectedImg;
     public Transform[] buttons;
     public GameObject StartButton;
+    public GameObject TimeScrollbar;
+    public GameObject ScrollbarTimeText;
     public GameObject ReadyButton;
 
 
     private GameObject joinPanel;
+    private int time = 60;
 
     private void Awake()
     {
         joinPanel = GameObject.Find("JoinPanel");
         PhotonNetwork.Instantiate("Player", Vector3.zero, Quaternion.identity, 0, null);
         if (PhotonNetwork.IsMasterClient)
+        {
             StartButton.SetActive(true);
+            TimeScrollbar.SetActive(true);
+        }
     }
 
     #region Photon Callbacks
@@ -131,7 +138,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (r)
             ReadyButton.GetComponent<Button>().interactable = false;
-        else 
+        else
             ReadyButton.GetComponent<Button>().interactable = true;
 
         GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetReady(r);
@@ -141,9 +148,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         tm.photonView.RPC("RPC_ClearAllTilemap", RpcTarget.AllBuffered);
         photonView.RPC("RPC_StartGame", RpcTarget.All);
-        timeManager.photonView.RPC("StartTime", RpcTarget.All, 60);
+        timeManager.photonView.RPC("StartTime", RpcTarget.All, time);
     }
-    
+
+    public void OnTimeScrollbarChanged()
+    {
+        float value = TimeScrollbar.GetComponent<Scrollbar>().value;
+
+        int step = Mathf.RoundToInt(value * 9);
+        int time = 60 + 20 * step;
+        ScrollbarTimeText.GetComponent<TMP_Text>().text = time.ToString();
+        this.time = time;
+    }
 
 
     #endregion
@@ -151,7 +167,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     #region RPCs
 
 
-    
     [PunRPC]
     void RPC_StartGame()
     {
@@ -163,6 +178,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //oyuncu 0 notsanýna dön
         GameObject.Find(PhotonNetwork.NickName).transform.position = new Vector3(0, 0, 0);
+        GameObject mj =  GameObject.Find("FixedMoveJoystick");
+        GameObject tj =  GameObject.Find("FixedThrowJoystick");
+        mj.SetActive(false);
+        tj.SetActive(false);
+        mj.SetActive(true);
+        tj.SetActive(true);
         joinPanel.SetActive(true);
         if (PhotonNetwork.IsMasterClient)
             StartButton.SetActive(true);

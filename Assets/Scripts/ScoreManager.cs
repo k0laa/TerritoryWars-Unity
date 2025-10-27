@@ -11,7 +11,6 @@ public class ScoreManager : MonoBehaviourPunCallbacks
     public TMP_Text[] scoreTexts;
 
     private Dictionary<int, string> players = new Dictionary<int, string>();
-
     TilemapManager tm;
 
     void Start()
@@ -28,6 +27,9 @@ public class ScoreManager : MonoBehaviourPunCallbacks
             yield return new WaitForSeconds(0.5f);
         }
     }
+
+    #region RPCs
+
 
     [PunRPC]
     public void RPC_UpdateScoreboard()
@@ -48,7 +50,7 @@ public class ScoreManager : MonoBehaviourPunCallbacks
         var top = counts.OrderByDescending(kv => kv.Value).Take(3).ToList();
 
         // Doldur
-        for (int i = 0; i < 3 ; i++)
+        for (int i = 0; i < 3; i++)
         {
             if (i >= top.Count)
             {
@@ -101,4 +103,7 @@ public class ScoreManager : MonoBehaviourPunCallbacks
             players.Remove(pwID);
         }
     }
+
+
+    #endregion
 }

@@ -11,8 +11,8 @@ public class TilemapManager : MonoBehaviourPunCallbacks
     public Tilemap tilemap;
     public TileBase[] tiles;
     public Dictionary<Vector2Int, Vector2Int> TilemapValues = new Dictionary<Vector2Int, Vector2Int>();
-    
 
+    // Tilemap Deðer Güncelleme
     [PunRPC]
     public void UpdateTilemapValue(int x, int y, int colorIndex, int pwId)
     {
@@ -21,6 +21,15 @@ public class TilemapManager : MonoBehaviourPunCallbacks
 
     }
 
+    // Grid Boyama
+    [PunRPC]
+    void RPC_PaintTile(int x, int y, int color)
+    {
+        Vector3Int cellPos = new Vector3Int(x, y, 0);
+        tilemap.SetTile(cellPos, tiles[color]);
+    }
+
+    // Tüm Tilemap'i Senkronize Etme
     [PunRPC]
     public void SyncAllTiles()
     {
@@ -31,6 +40,7 @@ public class TilemapManager : MonoBehaviourPunCallbacks
         }
     }
 
+    // Oyuncu Ayrýldýðýnda Ýlgili Tile'larý Temizleme
     [PunRPC]
     public void ClearTileForLeftPlayer(int leftPwId)
     {
@@ -52,14 +62,7 @@ public class TilemapManager : MonoBehaviourPunCallbacks
         }
     }
 
-
-    [PunRPC]
-    void RPC_PaintTile(int x, int y, int color)
-    {
-        Vector3Int cellPos = new Vector3Int(x, y, 0);
-        tilemap.SetTile(cellPos, tiles[color]);
-    }
-
+    // Tüm Tilemap'i Temizleme
     [PunRPC]
     void RPC_ClearAllTilemap()
     {
