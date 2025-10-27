@@ -55,7 +55,7 @@ public class MenuController : MonoBehaviourPunCallbacks
     {
         string name = GameObject.Find("UsernameInputField").GetComponent<TMP_InputField>().text.Trim();
 
-        if(name.Length >= 3)
+        if (name.Length > 0)
         {
             GameObject.Find("JoinButton").GetComponent<UnityEngine.UI.Button>().interactable = true;
         }

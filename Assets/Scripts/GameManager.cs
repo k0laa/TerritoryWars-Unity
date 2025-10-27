@@ -6,17 +6,15 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    public int playerTileColorIndex = -1;
     public TilemapManager tm;
     public ScoreManager sm;
     public TimeManager timeManager;
     public GameObject selectedImg;
-    public Transform[] buttons;
+    public GameObject[] buttons;
     public GameObject StartButton;
     public GameObject TimeScrollbar;
     public GameObject ScrollbarTimeText;
     public GameObject ReadyButton;
-
 
     private GameObject joinPanel;
     private int time = 60;
@@ -97,6 +95,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void selectColor(int index)
     {
+        photonView.RPC("RPC_ColorSelected", RpcTarget.AllBuffered, index, GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().tileIndex);
         GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().tileIndex = index;
         if (!GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().isReady)
             ReadyButton.GetComponent<Button>().interactable = true;
@@ -178,17 +177,23 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //oyuncu 0 notsanýna dön
         GameObject.Find(PhotonNetwork.NickName).transform.position = new Vector3(0, 0, 0);
-        GameObject mj =  GameObject.Find("FixedMoveJoystick");
-        GameObject tj =  GameObject.Find("FixedThrowJoystick");
+        GameObject mj = GameObject.Find("FixedMoveJoystick");
+        GameObject tj = GameObject.Find("FixedThrowJoystick");
         mj.SetActive(false);
         tj.SetActive(false);
         mj.SetActive(true);
         tj.SetActive(true);
         joinPanel.SetActive(true);
         if (PhotonNetwork.IsMasterClient)
+        {
             StartButton.SetActive(true);
+            TimeScrollbar.SetActive(true);
+        }
         else
+        {
             StartButton.SetActive(false);
+            TimeScrollbar.SetActive(false);
+        }
     }
 
     [PunRPC]
@@ -200,6 +205,13 @@ public class GameManager : MonoBehaviourPunCallbacks
             ReadyButton.GetComponent<Button>().interactable = true;
         GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().SetReady(r);
 
+    }
+
+    [PunRPC]
+    public void RPC_ColorSelected(int index, int prevIndex)
+    {
+        buttons[prevIndex].GetComponent<Button>().interactable = true;
+        buttons[index].GetComponent<Button>().interactable = false;
     }
 
 

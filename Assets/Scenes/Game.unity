@@ -1097,7 +1097,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &113595221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5910,7 +5910,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ala 1
+  m_text: ala 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9609,27 +9609,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9e52007d51b981479749c2294b5b8a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerTileColorIndex: -1
   tm: {fileID: 318579972}
   sm: {fileID: 1675996671}
   timeManager: {fileID: 68804572}
   selectedImg: {fileID: 1022107825}
   buttons:
-  - {fileID: 1150482544}
-  - {fileID: 1473142528}
-  - {fileID: 1343436984}
-  - {fileID: 409769781}
-  - {fileID: 1033598080}
-  - {fileID: 1259313096}
-  - {fileID: 303171876}
-  - {fileID: 938336106}
-  - {fileID: 990037650}
-  - {fileID: 223343887}
-  - {fileID: 1113077217}
-  - {fileID: 605611717}
-  - {fileID: 1528159498}
-  - {fileID: 334288345}
-  - {fileID: 1409092513}
+  - {fileID: 1150482543}
+  - {fileID: 1473142527}
+  - {fileID: 1343436983}
+  - {fileID: 409769780}
+  - {fileID: 1033598079}
+  - {fileID: 1259313095}
+  - {fileID: 303171875}
+  - {fileID: 938336105}
+  - {fileID: 990037649}
+  - {fileID: 223343886}
+  - {fileID: 1113077216}
+  - {fileID: 605611716}
+  - {fileID: 1528159497}
+  - {fileID: 334288344}
+  - {fileID: 1409092512}
   StartButton: {fileID: 1866592494}
   TimeScrollbar: {fileID: 113595220}
   ScrollbarTimeText: {fileID: 411263594}
@@ -15312,7 +15311,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1866592495
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16628,7 +16627,7 @@ RectTransform:
   m_Father: {fileID: 29899690}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.05, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}

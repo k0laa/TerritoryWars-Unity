@@ -1,5 +1,6 @@
 using Photon.Pun;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -52,8 +53,14 @@ public class Player : MonoBehaviourPunCallbacks
             // oyuncu deðerlerini ayarla
             Name.text = PhotonNetwork.NickName;
             name = PhotonNetwork.NickName;
-            tileIndex = gameManager.playerTileColorIndex;
             gameObject.tag = "Player";
+            foreach (GameObject button in gameManager.buttons)
+                if (button.GetComponent<Button>().interactable)
+                {
+                    tileIndex = gameManager.buttons.ToList().IndexOf(button);
+                    break;
+                }
+            gameManager.selectColor(tileIndex);
 
             // oyuncuyu skor yöneticisine ekle
             scoreManager.photonView.RPC("RPC_addPlayer", RpcTarget.AllBuffered, PhotonNetwork.NickName, PhotonNetwork.LocalPlayer.ActorNumber);
@@ -285,7 +292,7 @@ public class Player : MonoBehaviourPunCallbacks
                 {
                     Items.Remove(collision.gameObject);
                     speed += 4.5f;
-                    Invoke("RemoveSpeedBoost", 5f); 
+                    Invoke("RemoveSpeedBoost", 5f);
 
                     int viewID = collision.gameObject.GetComponent<PhotonView>().ViewID;
                     collision.GetComponent<ItemScript>().photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
