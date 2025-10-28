@@ -106,6 +106,8 @@ MonoBehaviour:
   isThrowable: 0
   isFreezeItem: 1
   isSpeedBoostItem: 0
+  isDoubleScoreItem: 0
+  isSlowItem: 0
   isThrowwed: 0
   owner: {fileID: 0}
   ownerName: 

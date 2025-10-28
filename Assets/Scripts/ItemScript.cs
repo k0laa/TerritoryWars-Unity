@@ -11,6 +11,7 @@ public class ItemScript : MonoBehaviourPunCallbacks
     public bool isFreezeItem;
     public bool isSpeedBoostItem;
     public bool isDoubleScoreItem;
+    public bool isSlowItem;
     public bool isThrowwed = false;
 
     public Transform owner;

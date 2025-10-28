@@ -29,6 +29,7 @@ public class Player : MonoBehaviourPunCallbacks
 
     float horizontal, vertical;
     Button freezeItem;
+    Button slowItem;
     Vector2 lastThrowPos = new Vector2(0, 0);
 
     void Start()
@@ -46,6 +47,9 @@ public class Player : MonoBehaviourPunCallbacks
             moveJoystick = GameObject.Find("FixedMoveJoystick").GetComponent<FixedJoystick>();
             throwJoystick = GameObject.Find("FixedThrowJoystick").GetComponent<FixedJoystick>();
             freezeItem = GameObject.Find("FreezeButton").GetComponent<Button>();
+            slowItem = GameObject.Find("SlowButton").GetComponent<Button>();
+            freezeItem.gameObject.SetActive(false);
+            slowItem.gameObject.SetActive(false);
 
             // sadece yerel oyuncu için kamera ve audio listener etkinleþtir
             gameObject.GetComponentInChildren<Camera>().enabled = true;
@@ -202,12 +206,18 @@ public class Player : MonoBehaviourPunCallbacks
                     itemToThrow = item;
                     break;
                 }
+                else if (itemType == 3 && itemScript.isSlowItem)
+                {
+                    itemToThrow = item;
+                    break;
+                }
             }
-            itemManager.DeACtivateItemThrowable(itemType);
+            itemManager.DeActivateItemThrowable(itemType);
             Items.Remove(itemToThrow);
 
             // Eþya bittiðinde butonu devre dýþý býrak
-            freezeItem.interactable = false;
+            freezeItem.gameObject.SetActive(false);
+            slowItem.gameObject.SetActive(false);
             if (Items.Count != 0)
                 foreach (GameObject item in Items)
                 {
@@ -216,7 +226,12 @@ public class Player : MonoBehaviourPunCallbacks
                     {
                         if (itemScript.isFreezeItem)
                         {
-                            freezeItem.interactable = true;
+                            freezeItem.gameObject.SetActive(true);
+                            break;
+                        }
+                        if (itemScript.isSlowItem)
+                        {
+                            slowItem.gameObject.SetActive(true);
                             break;
                         }
                     }
@@ -279,6 +294,11 @@ public class Player : MonoBehaviourPunCallbacks
         isDoubleScore = false;
     }
 
+    void RemoveSlow()
+    {
+        speed += 3.5f;
+    }
+
 
     #endregion
 
@@ -292,7 +312,7 @@ public class Player : MonoBehaviourPunCallbacks
 
                 if (collision.GetComponent<ItemScript>().isFreezeItem)
                 {
-                    freezeItem.interactable = true;
+                    freezeItem.gameObject.SetActive(true);
                 }
                 else if (collision.GetComponent<ItemScript>().isSpeedBoostItem)
                 {
@@ -311,6 +331,10 @@ public class Player : MonoBehaviourPunCallbacks
                     int viewID = collision.gameObject.GetComponent<PhotonView>().ViewID;
                     collision.GetComponent<ItemScript>().photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
                 }
+                else if (collision.GetComponent<ItemScript>().isSlowItem)
+                {
+                    slowItem.gameObject.SetActive(true);
+                }
 
             }
             else if (collision.gameObject.CompareTag("Item") && collision.GetComponent<ItemScript>().isCollected)
@@ -322,6 +346,12 @@ public class Player : MonoBehaviourPunCallbacks
                         isFreeze = true;
                         Invoke("Unfreeze", 3f);
                     }
+                    else if (collision.GetComponent<ItemScript>().isSlowItem)
+                    {
+                        speed -= 3.5f;
+                        Invoke("RemoveSlow", 3f);
+                    }
+
                     int viewID = collision.gameObject.GetComponent<PhotonView>().ViewID;
                     collision.GetComponent<ItemScript>().photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
                 }

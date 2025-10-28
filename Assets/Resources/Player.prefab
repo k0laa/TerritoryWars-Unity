@@ -110,6 +110,7 @@ MonoBehaviour:
   tileIndex: 0
   isReady: 0
   isFreeze: 0
+  isDoubleScore: 0
   activeItemType: -1
   Items: []
 --- !u!114 &9081262167184005522
