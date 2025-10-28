@@ -14,6 +14,7 @@ public class Player : MonoBehaviourPunCallbacks
     public int tileIndex;
     public bool isReady = false;
     public bool isFreeze = false;
+    public bool isDoubleScore = false;
     public int activeItemType = -1; // -1: none, 0: freeze
 
     public List<GameObject> Items;
@@ -150,8 +151,8 @@ public class Player : MonoBehaviourPunCallbacks
         Vector3Int cellPos = tilemap.WorldToCell(transform.position);
         if (tilemap.GetTile(cellPos) != tilemapManager.tiles[tileIndex])
         {
-            tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex);
-            tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber);
+            tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, isDoubleScore);
+            tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber, isDoubleScore);
         }
     }
 
@@ -273,6 +274,11 @@ public class Player : MonoBehaviourPunCallbacks
         speed -= 4.5f;
     }
 
+    void DisableDoubleScore()
+    {
+        isDoubleScore = false;
+    }
+
 
     #endregion
 
@@ -294,6 +300,14 @@ public class Player : MonoBehaviourPunCallbacks
                     speed += 4.5f;
                     Invoke("RemoveSpeedBoost", 5f);
 
+                    int viewID = collision.gameObject.GetComponent<PhotonView>().ViewID;
+                    collision.GetComponent<ItemScript>().photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
+                }
+                else if (collision.GetComponent<ItemScript>().isDoubleScoreItem)
+                {
+                    Items.Remove(collision.gameObject);
+                    isDoubleScore = true;
+                    Invoke("DisableDoubleScore", 5f);
                     int viewID = collision.gameObject.GetComponent<PhotonView>().ViewID;
                     collision.GetComponent<ItemScript>().photonView.RPC("RPC_DestroyItem", RpcTarget.MasterClient, viewID);
                 }

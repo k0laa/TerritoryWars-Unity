@@ -14,19 +14,31 @@ public class TilemapManager : MonoBehaviourPunCallbacks
 
     // Tilemap Deðer Güncelleme
     [PunRPC]
-    public void UpdateTilemapValue(int x, int y, int colorIndex, int pwId)
+    public void UpdateTilemapValue(int x, int y, int colorIndex, int pwId, bool isdoubleScore)
     {
         Vector2Int key = new Vector2Int(x, y);
         TilemapValues[key] = new Vector2Int(colorIndex, pwId);
+
+        if (isdoubleScore)
+        {
+            Vector2Int doubleKey = new Vector2Int(x + 1, y);
+            TilemapValues[doubleKey] = new Vector2Int(colorIndex, pwId);
+        }
 
     }
 
     // Grid Boyama
     [PunRPC]
-    void RPC_PaintTile(int x, int y, int color)
+    void RPC_PaintTile(int x, int y, int color, bool isDoubleScore)
     {
         Vector3Int cellPos = new Vector3Int(x, y, 0);
         tilemap.SetTile(cellPos, tiles[color]);
+
+        if (isDoubleScore)
+        {
+            Vector3Int doubleCellPos = new Vector3Int(x + 1, y, 0);
+            tilemap.SetTile(doubleCellPos, tiles[color]);
+        }
     }
 
     // Tüm Tilemap'i Senkronize Etme

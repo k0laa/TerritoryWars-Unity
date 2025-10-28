@@ -13,7 +13,7 @@ public class ItemManager : MonoBehaviour
 
     public void RandomItemInstantiate()
     {
-        int randomItem = Random.Range(0, 2);
+        int randomItem = Random.Range(0, 3);
         switch (randomItem)
         {
             case 0:
@@ -21,6 +21,9 @@ public class ItemManager : MonoBehaviour
                 break;
             case 1:
                 InstantiateSpeedBoost();
+                break;
+            case 2:
+                InstantiateDoubleScore();
                 break;
 
         }
@@ -36,6 +39,12 @@ public class ItemManager : MonoBehaviour
     {
         Vector2 position = new Vector2(Random.Range(-17f, 17f), Random.Range(-9f, 9f));
         PhotonNetwork.Instantiate("SpeedBoost", position, Quaternion.identity, 0, null);
+    }
+
+    public void InstantiateDoubleScore()
+    {
+        Vector2 position = new Vector2(Random.Range(-17f, 17f), Random.Range(-9f, 9f));
+        PhotonNetwork.Instantiate("DoubleScore", position, Quaternion.identity, 0, null);
     }
 
 

@@ -10,6 +10,7 @@ public class ItemScript : MonoBehaviourPunCallbacks
     public bool isThrowable = false;
     public bool isFreezeItem;
     public bool isSpeedBoostItem;
+    public bool isDoubleScoreItem;
     public bool isThrowwed = false;
 
     public Transform owner;
