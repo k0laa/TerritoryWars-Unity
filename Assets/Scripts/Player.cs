@@ -10,8 +10,10 @@ public class Player : MonoBehaviourPunCallbacks
 {
     public TMP_Text Name;
     public GameObject direct;
+    public GameObject Shooter;
+    public GameObject Pointer;
     public float speed;
-    public int tileIndex;
+    public int tileIndex = -1;
     public bool isReady = false;
     public bool isFreeze = false;
     public bool isDoubleScore = false;
@@ -28,8 +30,8 @@ public class Player : MonoBehaviourPunCallbacks
     FixedJoystick throwJoystick;
 
     float horizontal, vertical;
-    Button freezeItem;
-    Button slowItem;
+    public Button freezeItem;
+    public Button slowItem;
     Vector2 lastThrowPos = new Vector2(0, 0);
 
     void Start()

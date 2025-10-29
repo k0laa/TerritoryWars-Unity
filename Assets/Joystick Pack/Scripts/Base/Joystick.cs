@@ -59,11 +59,15 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public virtual void OnPointerDown(PointerEventData eventData)
     {
+        if (gameObject.name == "FixedThrowJoystick")
+            GameObject.Find("Game Manager").GetComponent<GameManager>().OnPointerDownShoot();
         OnDrag(eventData);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (gameObject.name == "FixedThrowJoystick")
+            GameObject.Find("Game Manager").GetComponent<GameManager>().OnDragShoot();
         cam = null;
         if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
             cam = canvas.worldCamera;
@@ -131,6 +135,8 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public virtual void OnPointerUp(PointerEventData eventData)
     {
+        if(gameObject.name=="FixedThrowJoystick")
+            GameObject.Find("Game Manager").GetComponent<GameManager>().OnPointerUpShoot();
         input = Vector2.zero;
         handle.anchoredPosition = Vector2.zero;
     }

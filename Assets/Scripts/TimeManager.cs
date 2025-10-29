@@ -44,6 +44,7 @@ public class TimeManager : MonoBehaviourPunCallbacks
             gm.photonView.RPC("RPC_setReady", RpcTarget.All, false);
             im.DestroyAllItems();// methodun içinde RPC çaðrýsý var. Np. 
         }
+        GameObject.FindWithTag("Player").GetComponent<Player>().Items.Clear();
     }
 
     [PunRPC]

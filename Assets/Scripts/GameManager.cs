@@ -179,10 +179,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         GameObject.Find(PhotonNetwork.NickName).transform.position = new Vector3(0, 0, 0);
         GameObject mj = GameObject.Find("FixedMoveJoystick");
         GameObject tj = GameObject.Find("FixedThrowJoystick");
-        mj.SetActive(false);
-        tj.SetActive(false);
-        mj.SetActive(true);
-        tj.SetActive(true);
+        GameObject.Find(PhotonNetwork.NickName).GetComponent<Player>().freezeItem.gameObject.SetActive(false);
+        GameObject.Find(PhotonNetwork.NickName).GetComponent<Player>().slowItem.gameObject.SetActive(false);
         joinPanel.SetActive(true);
         if (PhotonNetwork.IsMasterClient)
         {
@@ -210,9 +208,39 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_ColorSelected(int index, int prevIndex)
     {
-        buttons[prevIndex].GetComponent<Button>().interactable = true;
+        if (prevIndex != -1)
+            buttons[prevIndex].GetComponent<Button>().interactable = true;
         buttons[index].GetComponent<Button>().interactable = false;
     }
+
+
+    #endregion
+
+    #region Player Shooter Methods
+
+
+    public void OnPointerDownShoot()
+    {
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().Pointer.SetActive(true);
+
+    }
+
+    public void OnDragShoot()
+    {
+        GameObject shooter = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().Shooter;
+        FixedJoystick joystik = GameObject.Find("FixedThrowJoystick").GetComponent<FixedJoystick>();
+
+        Vector2 direction = new Vector2(joystik.Horizontal, joystik.Vertical);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        shooter.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+
+    }
+
+    public void OnPointerUpShoot()
+    {
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().Pointer.SetActive(false);
+    }
+
 
 
     #endregion
