@@ -21,7 +21,7 @@ public class TilemapManager : MonoBehaviourPunCallbacks
 
         if (isdoubleScore)
         {
-            Vector2Int doubleKey = new Vector2Int(x + 1, y);
+            Vector2Int doubleKey = new Vector2Int(x * 1000, y * 1000);
             TilemapValues[doubleKey] = new Vector2Int(colorIndex, pwId);
         }
 
@@ -29,16 +29,10 @@ public class TilemapManager : MonoBehaviourPunCallbacks
 
     // Grid Boyama
     [PunRPC]
-    void RPC_PaintTile(int x, int y, int color, bool isDoubleScore)
+    void RPC_PaintTile(int x, int y, int color)
     {
         Vector3Int cellPos = new Vector3Int(x, y, 0);
         tilemap.SetTile(cellPos, tiles[color]);
-
-        if (isDoubleScore)
-        {
-            Vector3Int doubleCellPos = new Vector3Int(x + 1, y, 0);
-            tilemap.SetTile(doubleCellPos, tiles[color]);
-        }
     }
 
     // Tüm Tilemap'i Senkronize Etme

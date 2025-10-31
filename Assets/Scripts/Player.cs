@@ -157,7 +157,7 @@ public class Player : MonoBehaviourPunCallbacks
         Vector3Int cellPos = tilemap.WorldToCell(transform.position);
         if (tilemap.GetTile(cellPos) != tilemapManager.tiles[tileIndex])
         {
-            tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, isDoubleScore);
+            tilemapManager.GetComponent<PhotonView>().RPC("RPC_PaintTile", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex);
             tilemapManager.GetComponent<PhotonView>().RPC("UpdateTilemapValue", RpcTarget.AllBuffered, cellPos.x, cellPos.y, tileIndex, PhotonNetwork.LocalPlayer.ActorNumber, isDoubleScore);
         }
     }
