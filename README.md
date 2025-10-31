@@ -7,7 +7,7 @@ Territory Wars, Photon Network kullanarak geliştirilmiş çok oyunculu bir tile
 Demo / Download
 ---------------
 
-**APK :** [TerritoryWars.apk](TerritoryWars.apk)
+**APK :** [TerritoryWars.apk](https://drive.google.com/drive/folders/11iROUtuIlKCJSB36I6Pbg_o4FwZNt-pG?usp=drive_link)
 
 ## Oyun Hakkında
 
